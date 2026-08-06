@@ -58,6 +58,18 @@ router.get('/get-single-user-profile-data', indexController.fetchUserProfile);
 router.post('/report-user', indexController.reportUserId);
 
 /**
+ * @route   PUT api/users/update-profile
+ * @desc    Update user profile
+ */
+router.put('/update-profile', indexController.updateProfile);
+
+/**
+ * @route   PATCH api/users/update-initial-status
+ * @desc    Update initial login status
+ */
+router.patch('/update-initial-status', indexController.updateInitialPopupStatus);
+
+/**
  * @route   GET api/users/
  * @desc    Home page
  */
@@ -68,8 +80,5 @@ router.get('/', indexController.home);
  * @desc    About page  
  */
 router.get('/about', indexController.about);
-
-
-// route
 
 export default router;

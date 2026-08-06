@@ -482,6 +482,37 @@ class IndexController {
     //         res.status(500).json({ error: err.message });
     //     }
     // }
+    // PUT /update-profile
+    async updateProfile(req, res) {
+        try {
+            const { userId, email, profileImage } = req.body;
+            const updateFields = {};
+            if (email) updateFields.email = email;
+            if (profileImage) updateFields.profile_img = profileImage;
+
+            if (!Object.keys(updateFields).length) {
+                return res.status(400).json({ error: 'No fields to update' });
+            }
+
+            const result = await db.collection('users').updateOne(
+                { _id: new ObjectId(userId) },
+                { $set: updateFields }
+            );
+
+            if (result.matchedCount === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            const user = await db.collection('users').findOne(
+                { _id: new ObjectId(userId) },
+                { projection: { password: 0 } }
+            );
+            res.json({ message: 'Profile updated successfully', code: 200, data: convertObjectId(user) });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
     async reportUserId(req, res) {
         try {
             // console.log('reportUserId called with body:', req.body);

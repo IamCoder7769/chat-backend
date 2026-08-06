@@ -137,6 +137,34 @@ class roomController {
         res.send('its working');
     }
 
+    // PUT /update-room
+    async updateRoom(req, res) {
+        try {
+            const { roomId, roomName, roomImgIcon } = req.body;
+            const updateFields = {};
+            if (roomName) updateFields.room_name = roomName;
+            if (roomImgIcon) updateFields.image = roomImgIcon;
+
+            if (!Object.keys(updateFields).length) {
+                return res.status(400).json({ error: 'No fields to update' });
+            }
+
+            const result = await db.collection('rooms').updateOne(
+                { _id: new ObjectId(roomId) },
+                { $set: updateFields }
+            );
+
+            if (result.matchedCount === 0) {
+                return res.status(404).json({ error: 'Room not found' });
+            }
+
+            const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
+            res.json({ message: 'Room updated successfully', code: 200, data: convertObjectId(room) });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
 }
 
 export default roomController;

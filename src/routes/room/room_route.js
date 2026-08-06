@@ -1,26 +1,12 @@
 import express from 'express';
 import roomController from '../../controllers/room_contoller.js';
 const roomRoute = express.Router();
-const indexController = new roomController();
+const controller = new roomController();
 
-/**
- * @route   GET api/users/room-list
- * @desc    Fetch all rooms
- */
-roomRoute.get('/room-list', indexController.getRoomsList);
-
-/**
- * @route   GET api/users/get-room-chat
- * @desc    Get room chat by room id
- */
-roomRoute.get('/get-room-chat', indexController.getRoomsChats);
-
-
-/**
- * @route   POST api/users/creat-room
- * @desc    Create new room
- */
-roomRoute.post('/creat-room', indexController.createRoom);
-
+roomRoute.get('/room-list', controller.getRoomsList);
+roomRoute.get('/get-room-chat', controller.getRoomsChats);
+roomRoute.post('/create-room', controller.createRoom);
+roomRoute.post('/creat-room', controller.createRoom); // keep old typo for compatibility
+roomRoute.put('/update-room', controller.updateRoom);
 
 export default roomRoute;
