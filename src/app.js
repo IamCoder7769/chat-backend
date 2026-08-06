@@ -19,19 +19,21 @@ const allowedOrigins = [
     'https://nexttalk-rust.vercel.app',
     'https://next-talk-frontend-alpha.vercel.app',
     process.env.FRONTEND_URL
-].filter(Boolean);
+].filter(Boolean).map(o => o.replace(/\/$/, ''));
 
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        const cleanOrigin = origin ? origin.replace(/\/$/, '') : null;
+        if (!cleanOrigin || allowedOrigins.includes(cleanOrigin)) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error(`CORS blocked: ${origin}`));
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
@@ -44,7 +46,6 @@ app.use('/api/users', authRoute);
 app.use('/api/users', roomRoute);
 app.use('/api/chat', chatRoute);
 
-// AI chat endpoint (used by FloatingAIBot)
 app.post('/ai-chat', async (req, res) => {
     try {
         const { user_id, message } = req.body;
@@ -57,10 +58,8 @@ app.post('/ai-chat', async (req, res) => {
 
 app.get('/ping', (req, res) => res.json({ message: 'pong' }));
 
-// Connect DB once and export app for Vercel serverless
 connectDB().catch(err => console.error('MongoDB connection error:', err));
 
-// For local development
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
