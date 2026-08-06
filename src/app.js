@@ -11,7 +11,6 @@ import chatRoute from './routes/chat/chat_route.js';
 import { chat } from './services/ai_chat.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
     'http://localhost:5173',
@@ -58,14 +57,15 @@ app.post('/ai-chat', async (req, res) => {
 
 app.get('/ping', (req, res) => res.json({ message: 'pong' }));
 
-(async () => {
-    try {
-        await connectDB();
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
-        });
-    } catch (err) {
-        console.error('Failed to start server:', err);
-        process.exit(1);
-    }
-})();
+// Connect DB once and export app for Vercel serverless
+connectDB().catch(err => console.error('MongoDB connection error:', err));
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
