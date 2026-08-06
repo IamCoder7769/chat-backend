@@ -18,6 +18,7 @@ const allowedOrigins = [
     'http://127.0.0.1:5173',
     'http://192.168.1.27:5173',
     'https://nexttalk-rust.vercel.app',
+    'https://next-talk-frontend-alpha.vercel.app',
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
