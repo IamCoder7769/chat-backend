@@ -16,12 +16,13 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'http://192.168.1.27:5173'
-];
+    'http://192.168.1.27:5173',
+    'https://nexttalk-rust.vercel.app',
+    process.env.FRONTEND_URL
+].filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
     origin: (origin, callback) => {
-        // allow requests with no origin (mobile apps, curl, etc)
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -31,10 +32,10 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
 
-// Handle preflight requests for all routes
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
